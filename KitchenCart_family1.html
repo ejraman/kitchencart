@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>KitchenCart - Family 1</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="KitchenCart">
+<meta name="theme-color" content="#e07b39">
+<meta name="mobile-web-app-capable" content="yes">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Nunito+Sans:wght@400;600&display=swap');
+
+  :root {
+    --bg: #f0ede8;
+    --card: #ffffff;
+    --border: #e5e0d8;
+    --text: #2d2a26;
+    --muted: #8a8480;
+    --green: #25D366;
+    --green-dark: #1da050;
+    --accent: #e07b39;
+    --accent-light: #fff0e6;
+    --cat-header: #faf8f5;
+    --edit-bg: #fffbf7;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 100px;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: var(--card);
+    padding: 18px 16px 12px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .app-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 21px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 3px;
+  }
+  .app-subtitle { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .top-actions { display: flex; gap: 8px; }
+  .top-btn {
+    flex: 1;
+    padding: 8px 4px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .top-btn:active { background: var(--border); }
+
+  .content { padding: 12px 12px 0; }
+
+  /* ── CATEGORY CARD ── */
+  .category-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .cat-header {
+    background: var(--cat-header);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    user-select: none;
+  }
+  .cat-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .cat-count {
+    font-size: 11px;
+    background: var(--accent-light);
+    color: var(--accent);
+    border-radius: 20px;
+    padding: 2px 7px;
+    font-weight: 700;
+  }
+  .cat-toggle { color: var(--muted); font-size: 11px; transition: transform 0.2s; }
+  .cat-toggle.open { transform: rotate(180deg); }
+  .cat-body { display: block; }
+  .cat-body.collapsed { display: none; }
+
+  /* ── NORMAL ITEM ROW ── */
+  .item-row {
+    display: flex;
+    align-items: center;
+    padding: 9px 10px 9px 14px;
+    border-bottom: 1px solid #f5f2ee;
+    gap: 7px;
+  }
+  .item-row:last-child { border-bottom: none; }
+  .item-row.checked { opacity: 0.42; }
+
+  .item-check {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    transition: all 0.15s;
+  }
+  .item-check.checked { background: var(--green); border-color: var(--green); }
+  .item-check.checked::after { content: '✓'; font-size: 13px; font-weight: 700; color: #fff; }
+
+  .item-name {
+    flex: 1;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.3;
+    min-width: 0;
+  }
+  .item-name.checked { text-decoration: line-through; color: var(--muted); }
+
+  .new-badge {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--accent);
+    background: var(--accent-light);
+    border-radius: 4px;
+    padding: 1px 4px;
+    margin-left: 4px;
+    vertical-align: middle;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  /* ── QTY CONTROLS ── */
+  .qty-ctrl {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+  }
+  .qty-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    line-height: 1;
+    flex-shrink: 0;
+    padding: 0;
+  }
+  .qty-btn:active { background: var(--border); }
+  .qty-amount {
+    width: 38px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    border: 1.5px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text);
+    padding: 3px 1px;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  .qty-amount::-webkit-inner-spin-button,
+  .qty-amount::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  .qty-amount:focus { border-color: var(--accent); background: #fff; }
+  .qty-unit {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 22px;
+  }
+
+  /* ── EDIT / DELETE ICON BUTTONS ── */
+  .item-actions {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  .act-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: none;
+    border-radius: 7px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--muted);
+    transition: background 0.12s, color 0.12s;
+    flex-shrink: 0;
+    padding: 0;
+  }
+  .act-btn:hover, .act-btn:active { background: var(--bg); }
+  .act-btn.edit:hover  { color: var(--accent); }
+  .act-btn.del:hover   { color: #e05050; }
+  .act-btn.del:active  { color: #e05050; }
+
+  /* ── INLINE EDIT ROW ── */
+  .edit-row {
+    background: var(--edit-bg);
+    border-bottom: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .edit-row:last-child { border-bottom: none; }
+
+  .edit-row-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .edit-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+  .edit-name-in {
+    flex: 1;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 9px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    background: #fff;
+    color: var(--text);
+    outline: none;
+  }
+  .edit-name-in:focus { border-color: var(--accent); }
+
+  .edit-row-bottom {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .edit-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .edit-amt-in {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 6px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 13px;
+    background: #fff;
+    color: var(--text);
+    width: 70px;
+    text-align: center;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  .edit-amt-in::-webkit-inner-spin-button,
+  .edit-amt-in::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .edit-amt-in:focus { border-color: var(--accent); }
+  .edit-unit-in {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 6px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 13px;
+    background: #fff;
+    color: var(--text);
+    width: 70px;
+    outline: none;
+  }
+  .edit-unit-in:focus { border-color: var(--accent); }
+  .edit-step-in {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 6px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 13px;
+    background: #fff;
+    color: var(--text);
+    width: 70px;
+    text-align: center;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  .edit-step-in::-webkit-inner-spin-button,
+  .edit-step-in::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .edit-step-in:focus { border-color: var(--accent); }
+
+  .edit-spacer { flex: 1; }
+
+  .edit-save-btn {
+    padding: 7px 16px;
+    border: none;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    align-self: flex-end;
+  }
+  .edit-save-btn:active { background: #c96a28; }
+  .edit-cancel-btn {
+    padding: 7px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--muted);
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    align-self: flex-end;
+  }
+  .edit-cancel-btn:active { background: var(--bg); }
+
+  /* ── ADD ITEM ROW ── */
+  .add-item-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    gap: 5px;
+    background: #fafaf8;
+    border-top: 1px dashed var(--border);
+  }
+  .add-item-name {
+    flex: 1;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 8px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 13px;
+    background: #fff;
+    color: var(--text);
+    outline: none;
+    min-width: 0;
+  }
+  .add-item-name:focus { border-color: var(--accent); }
+  .add-item-amount {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 5px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 13px;
+    background: #fff;
+    color: var(--text);
+    width: 50px;
+    text-align: center;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  .add-item-amount::-webkit-inner-spin-button,
+  .add-item-amount::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .add-item-amount:focus { border-color: var(--accent); }
+  .add-item-unit {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 5px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 13px;
+    background: #fff;
+    color: var(--text);
+    width: 54px;
+    outline: none;
+  }
+  .add-item-unit:focus { border-color: var(--accent); }
+  .add-item-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: var(--accent);
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-weight: 700;
+    line-height: 1;
+    padding: 0;
+  }
+  .add-item-btn:active { background: #c96a28; }
+
+  /* ── FOOTER ── */
+  .footer-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 200;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+  }
+  .selected-count {
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    flex: 1;
+  }
+  .selected-count span { color: var(--text); }
+  .whatsapp-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    flex: 2;
+    justify-content: center;
+  }
+  .whatsapp-btn:active { background: var(--green-dark); }
+</style>
+<style>
+.family-bar{display:inline-block;background:var(--accent-light);color:var(--accent);font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;border-radius:20px;padding:3px 10px;margin-bottom:8px;}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="family-bar">&#128106; Family 1</div>
+  <div class="app-title">&#128722; KitchenCart</div>
+  <div class="app-subtitle">Your smart grocery companion &middot; check &middot; edit &middot; send via WhatsApp</div>
+  <div class="top-actions">
+    <button class="top-btn" onclick="selectAll()">Select all</button>
+    <button class="top-btn" onclick="clearAll()">Clear all</button>
+    <button class="top-btn" onclick="resetQty()">Reset qty</button>
+  </div>
+</div>
+
+<div class="content" id="app"></div>
+
+<div class="footer-bar">
+  <div class="selected-count" id="sel-count">No items selected</div>
+  <button class="whatsapp-btn" onclick="sendWhatsApp()">&#128242; Send via WhatsApp</button>
+</div>
+
+<script>
+var FAMILY_NAME = "Family 1";
+var STORAGE_KEY = "kc_family1";
+
+const DEFAULT_CATEGORIES = [
+  { id:'rice_wheat', icon:'🌾', name:'Rice, Wheat & Cereals', items:[
+    { name:'Basmati rice',              amount:5,   unit:'kg',      step:1 },
+    { name:'Atta (wheat flour)',         amount:5,   unit:'kg',      step:1 },
+    { name:'Idli / dosa batter',        amount:2,   unit:'ltrs',    step:1 },
+    { name:'Poha',                      amount:500, unit:'gms',     step:100 },
+    { name:'Oats',                      amount:1,   unit:'pack',    step:1 },
+    { name:'Semolina (rava)',            amount:500, unit:'gms',     step:100 },
+    { name:'Gits rava idli mix',        amount:500, unit:'gms',     step:100 },
+    { name:'Sona Masoori rice (Bharath)',amount:5,  unit:'kg',      step:1 },
+    { name:'Idly dosai rice',           amount:5,   unit:'kg',      step:1 },
+  ]},
+  { id:'dal_lentils', icon:'🫘', name:'Dhal & Lentils', items:[
+    { name:'Toor dal',                  amount:1,   unit:'kg',      step:0.5 },
+    { name:'Moong dal washed yellow',   amount:1,   unit:'kg',      step:0.5 },
+    { name:'Chana dal',                 amount:500, unit:'gms',     step:100 },
+    { name:'Masoor dal',                amount:500, unit:'gms',     step:100 },
+    { name:'Rajma',                     amount:500, unit:'gms',     step:100 },
+    { name:'Urad dal dhuli',            amount:1,   unit:'kg',      step:0.5 },
+    { name:'Chickpeas (chana)',         amount:500, unit:'gms',     step:100 },
+  ]},
+  { id:'oils_spices', icon:'🌶️', name:'Cooking Oil, Spices & Condiments', items:[
+    { name:'Sunflower oil',             amount:2,   unit:'ltrs',    step:1 },
+    { name:'Coconut oil',               amount:1,   unit:'ltr',     step:1 },
+    { name:'Ghee',                      amount:500, unit:'gms',     step:100 },
+    { name:'Sesame oil',                amount:500, unit:'ml',      step:100 },
+    { name:'Groundnut oil (Paripoorna)',amount:2,   unit:'ltrs',    step:1 },
+    { name:'Turmeric powder',           amount:100, unit:'gms',     step:50 },
+    { name:'Red chilli powder',         amount:100, unit:'gms',     step:50 },
+    { name:'Coriander powder',          amount:100, unit:'gms',     step:50 },
+    { name:'Cumin seeds (jeera)',        amount:250, unit:'gms',     step:50 },
+    { name:'Mustard seeds',             amount:100, unit:'gms',     step:50 },
+    { name:'Garam masala',              amount:1,   unit:'pack',    step:1 },
+    { name:'Sambar powder',             amount:1,   unit:'pack',    step:1 },
+    { name:'Salt (Tata)',               amount:1,   unit:'kg',      step:1 },
+    { name:'Sugar',                     amount:1,   unit:'kg',      step:0.5 },
+    { name:'Jaggery powder (UC Org)',   amount:800, unit:'gms',     step:100 },
+    { name:'Ulavar jaggery',            amount:500, unit:'gms',     step:100 },
+    { name:'Tamarind (Suria)',          amount:500, unit:'gms',     step:100 },
+    { name:'Maggi chilli sauce',        amount:500, unit:'gms',     step:100 },
+    { name:'Tomato ketchup (HNZ)',      amount:200, unit:'gms',     step:1 },
+    { name:'Mayonnaise (Sprto)',        amount:500, unit:'gms',     step:1 },
+    { name:'Byadigi chilli (Sarva)',    amount:250, unit:'gms',     step:50 },
+    { name:'Black sesame seeds',        amount:100, unit:'gms',     step:50 },
+    { name:'Kashmiri red chilli (Ever)',amount:500, unit:'gms',     step:100 },
+    { name:'Pattu idly chilli powder',  amount:200, unit:'gms',     step:50 },
+    { name:'Mundu chilli (UC)',         amount:100, unit:'gms',     step:50 },
+    { name:'Chilli whole round',        amount:100, unit:'gms',     step:50 },
+    { name:'Chilli padi extra hot',     amount:50,  unit:'gms',     step:50 },
+    { name:'Cocoa powder (VH)',         amount:100, unit:'gms',     step:50 },
+    { name:"Ching's miracle masala",    amount:1,   unit:'pack',    step:1 },
+    { name:"Ching's schezwan chutney",  amount:250, unit:'gms',     step:100 },
+  ]},
+  { id:'dairy', icon:'🥛', name:'Dairy Products', items:[
+    { name:'Full cream milk',           amount:2,   unit:'ltrs',    step:1 },
+    { name:'Amul Tazza milk',           amount:1,   unit:'ltr',     step:1 },
+    { name:'Meiji fresh milk',          amount:2,   unit:'ltrs',    step:1 },
+    { name:'Fresh skimmed milk',        amount:1,   unit:'ltr',     step:1 },
+    { name:'Curd / yogurt',             amount:500, unit:'gms',     step:250 },
+    { name:'Butter (Amul salted)',      amount:1,   unit:'pack',    step:1 },
+    { name:'Amul butter unsalted',      amount:500, unit:'gms',     step:1 },
+    { name:'Paneer',                    amount:200, unit:'gms',     step:100 },
+    { name:'Eggs',                      amount:12,  unit:'pcs',     step:6 },
+    { name:'Cheese slices',             amount:1,   unit:'pack',    step:1 },
+    { name:'Anchor cheddar cheese',     amount:1,   unit:'pack',    step:1 },
+    { name:'Amul cheese slice 750gm',   amount:1,   unit:'pack',    step:1 },
+    { name:'Perfect mozzarella cheese', amount:250, unit:'gms',     step:1 },
+  ]},
+  { id:'beverages', icon:'☕', name:'Beverages', items:[
+    { name:'Tea powder (Tata Gold)',     amount:250, unit:'gms',     step:50 },
+    { name:'Coffee powder (Leo)',        amount:200, unit:'gms',     step:50 },
+    { name:'Drinking water (cans)',     amount:2,   unit:'cans',    step:1 },
+    { name:'Fruit juice',               amount:2,   unit:'bottles', step:1 },
+    { name:'Nestum Org 3in1',           amount:1,   unit:'pack',    step:1 },
+  ]},
+  { id:'groceries', icon:'🧺', name:'Groceries', items:[
+    { name:'Groundnut 500g',            amount:500, unit:'gms',     step:100 },
+  ]},
+  { id:'toiletries', icon:'🧴', name:'Toiletries', items:[
+    { name:'Soap bars',                 amount:4,   unit:'pcs',     step:1 },
+    { name:'Shampoo',                   amount:1,   unit:'bottle',  step:1 },
+    { name:'Toothpaste',                amount:1,   unit:'tube',    step:1 },
+    { name:'Hand wash',                 amount:1,   unit:'bottle',  step:1 },
+    { name:'Dish wash liquid (Mama Lemon)', amount:1, unit:'bottle',step:1 },
+    { name:'Floor cleaner',             amount:1,   unit:'bottle',  step:1 },
+    { name:'Toilet cleaner',            amount:1,   unit:'bottle',  step:1 },
+    { name:'Tissue / kitchen roll',     amount:2,   unit:'packs',   step:1 },
+    { name:'Garbage bags',              amount:1,   unit:'pack',    step:1 },
+    { name:'Fabric softener lavender',  amount:1,   unit:'bottle',  step:1 },
+    { name:'Attack colour detergent',   amount:3,   unit:'kg',      step:1 },
+    { name:'Lime kitchen cleaner',      amount:1,   unit:'bottle',  step:1 },
+    { name:'CIF cyclone cleaner',       amount:660, unit:'ml',      step:1 },
+    { name:'Neutrogena rain bath gel',  amount:1,   unit:'bottle',  step:1 },
+    { name:'Dove body spray',           amount:1,   unit:'bottle',  step:1 },
+  ]},
+  { id:'snacks', icon:'🥨', name:'Snacks', items:[
+    { name:'Bread',                     amount:1,   unit:'loaf',    step:1 },
+    { name:'Biscuits',                  amount:2,   unit:'packs',   step:1 },
+    { name:'Cornflakes / muesli',       amount:1,   unit:'pack',    step:1 },
+    { name:'Peanuts',                   amount:250, unit:'gms',     step:50 },
+    { name:'Murukku / chakli',          amount:1,   unit:'pack',    step:1 },
+    { name:'Pringles',                  amount:1,   unit:'can',     step:1 },
+    { name:'Maggi noodles',             amount:2,   unit:'packs',   step:1 },
+    { name:'Asst titbits (Aswin)',      amount:1,   unit:'pack',    step:1 },
+    { name:'M&M funsize assorted',      amount:1,   unit:'pack',    step:1 },
+    { name:'Rajaram peanut bar',        amount:250, unit:'gms',     step:50 },
+    { name:'Doritos assorted chips',    amount:198, unit:'gms',     step:1 },
+    { name:'Crispeez methi attabis',    amount:350, unit:'gms',     step:1 },
+    { name:'Kinder Bueno T2x8',         amount:344, unit:'gms',     step:1 },
+    { name:'Daim mini choc',            amount:280, unit:'gms',     step:1 },
+    { name:'Alfredo bar assorted',      amount:100, unit:'gms',     step:1 },
+    { name:'Hershey assorted',          amount:214, unit:'gms',     step:1 },
+    { name:'SIS raw sugar',             amount:800, unit:'gms',     step:100 },
+    { name:'Almonds raw',               amount:500, unit:'gms',     step:100 },
+    { name:'Appalam mini (Stag)',        amount:150, unit:'gms',     step:1 },
+    { name:'Appalam large (Stag)',       amount:275, unit:'gms',     step:1 },
+    { name:'Haldiram asst namkeen',     amount:400, unit:'gms',     step:1 },
+    { name:'Nacho cheese dip (Bagus)',  amount:490, unit:'gms',     step:1 },
+  ]},
+  { id:'vegetables', icon:'🥦', name:'Vegetables', items:[
+    { name:'Onions',                    amount:1,   unit:'kg',      step:0.5 },
+    { name:'Tomatoes',                  amount:500, unit:'gms',     step:100 },
+    { name:'Potatoes',                  amount:1,   unit:'kg',      step:0.5 },
+    { name:'Potato russet (USA)',        amount:1,   unit:'kg',      step:0.5 },
+    { name:'Garlic',                    amount:1,   unit:'pack',    step:1 },
+    { name:'Ginger',                    amount:200, unit:'gms',     step:50 },
+    { name:'Green chillies',            amount:100, unit:'gms',     step:50 },
+    { name:'Curry leaves',              amount:1,   unit:'bunch',   step:1 },
+    { name:'Coriander leaves',          amount:1,   unit:'bunch',   step:1 },
+    { name:'Spinach',                   amount:500, unit:'gms',     step:100 },
+    { name:'Sweetcorn',                 amount:2,   unit:'pcs',     step:1 },
+    { name:'Capsicum yellow',           amount:2,   unit:'pcs',     step:1 },
+    { name:'Capsicum green',            amount:2,   unit:'pcs',     step:1 },
+    { name:'Capsicum red',              amount:2,   unit:'pcs',     step:1 },
+    { name:'Beetroot',                  amount:1,   unit:'pc',      step:1 },
+    { name:'Ladies finger (okra)',      amount:250, unit:'gms',     step:50 },
+    { name:'Cucumber baby Thai',        amount:2,   unit:'pcs',     step:1 },
+    { name:'Radish (mooli)',            amount:1,   unit:'pc',      step:1 },
+    { name:'Bitter gourd (karela)',     amount:2,   unit:'pcs',     step:1 },
+    { name:'Lime yellow',              amount:6,   unit:'pcs',     step:1 },
+    { name:'Brinjal black',            amount:2,   unit:'pcs',     step:1 },
+    { name:'Snake gourd',              amount:1,   unit:'pc',      step:1 },
+    { name:'Cluster beans (gavar)',     amount:250, unit:'gms',     step:50 },
+    { name:'French beans',             amount:250, unit:'gms',     step:50 },
+    { name:'Pumpkin golden',           amount:500, unit:'gms',     step:100 },
+    { name:'Carrot',                   amount:500, unit:'gms',     step:100 },
+    { name:'Kovakai (gentlemens toe)', amount:1,   unit:'pack',    step:1 },
+  ]},
+  { id:'fruits', icon:'🍎', name:'Fruits', items:[
+    { name:'Bananas',                   amount:1,   unit:'dozen',   step:1 },
+    { name:'Banana Philippines',        amount:1,   unit:'bunch',   step:1 },
+    { name:'Apples',                    amount:6,   unit:'pcs',     step:1 },
+    { name:'Granny Smith apple (Org)',  amount:1,   unit:'pack',    step:1 },
+    { name:'Lemons',                    amount:6,   unit:'pcs',     step:1 },
+    { name:'Candy apples',             amount:500, unit:'gms',     step:100 },
+    { name:'Guava seedless',            amount:1,   unit:'pack',    step:1 },
+    { name:'Safawi dates',              amount:500, unit:'gms',     step:100 },
+    { name:'Red seedless grapes',       amount:500, unit:'gms',     step:100 },
+    { name:'Black seedless grapes',     amount:500, unit:'gms',     step:100 },
+    { name:'India seedless grapes',     amount:500, unit:'gms',     step:100 },
+    { name:'Orange Egypt (M)',          amount:4,   unit:'pcs',     step:1 },
+    { name:'Baby mandarin',             amount:1,   unit:'pack',    step:1 },
+    { name:'Mango honey Thailand',      amount:1,   unit:'pc',      step:1 },
+    { name:'Papaya',                    amount:1,   unit:'pc',      step:1 },
+  ]},
+];
+
+function freshState() {
+  return DEFAULT_CATEGORIES.map(function(cat) {
+    return Object.assign({}, cat, {
+      collapsed: false,
+      items: cat.items.map(function(item) {
+        return Object.assign({}, item, { checked: false, isCustom: false });
+      })
+    });
+  });
+}
+function loadState() {
+  try { var s = localStorage.getItem(STORAGE_KEY); if (s) return JSON.parse(s); } catch(e) {}
+  return freshState();
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+var state = loadState();
+var editingKey = null;
+
+function sendWhatsApp() {
+  var now = new Date();
+  var ds = now.toLocaleDateString('en-SG', {day:'2-digit',month:'short',year:'numeric'});
+  var ts = now.toLocaleTimeString('en-SG', {hour:'2-digit',minute:'2-digit'});
+  var lines = ['SHOPPING_EMOJI *KitchenCart - ' + FAMILY_NAME + '*', 'DATE_EMOJI ' + ds + ' ' + ts + '\n'];
+  state.forEach(function(cat) {
+    var sel = cat.items.filter(function(i){ return i.checked; });
+    if (!sel.length) return;
+    lines.push('*' + cat.icon + ' ' + cat.name + '*');
+    sel.forEach(function(item){ lines.push('- ' + item.name + ' : ' + item.amount + ' ' + item.unit); });
+    lines.push('');
+  });
+  if (lines.length <= 2) { alert('Please select some items first!'); return; }
+  var text = lines.join('\n');
+  showShareModal(text, 'https://wa.me/?text=' + encodeURIComponent(text));
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+  state.forEach((cat, ci) => {
+    const checkedCount = cat.items.filter(i => i.checked).length;
+    const card = document.createElement('div');
+    card.className = 'category-card';
+
+    // Header
+    const hdr = document.createElement('div');
+    hdr.className = 'cat-header';
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'cat-title';
+    titleDiv.innerHTML = `<span>${cat.icon}</span><span>${cat.name}</span>`;
+    if (checkedCount > 0) {
+      const b = document.createElement('span');
+      b.className = 'cat-count';
+      b.textContent = `${checkedCount}/${cat.items.length}`;
+      titleDiv.appendChild(b);
+    }
+    const toggle = document.createElement('span');
+    toggle.className = 'cat-toggle' + (cat.collapsed ? '' : ' open');
+    toggle.textContent = '▲';
+    hdr.appendChild(titleDiv);
+    hdr.appendChild(toggle);
+    hdr.addEventListener('click', () => { cat.collapsed = !cat.collapsed; saveState(); render(); });
+    card.appendChild(hdr);
+
+    const body = document.createElement('div');
+    body.className = 'cat-body' + (cat.collapsed ? ' collapsed' : '');
+
+    cat.items.forEach((item, ii) => {
+      const key = `${ci}-${ii}`;
+      if (editingKey === key) {
+        body.appendChild(makeEditRow(item, ci, ii));
+      } else {
+        body.appendChild(makeItemRow(item, ci, ii));
+      }
+    });
+
+    body.appendChild(makeAddRow(ci));
+    card.appendChild(body);
+    app.appendChild(card);
+  });
+
+  updateCount();
+}
+
+// ── NORMAL ITEM ROW ──────────────────────────────────────────────────────────
+function makeItemRow(item, ci, ii) {
+  const row = document.createElement('div');
+  row.className = 'item-row' + (item.checked ? ' checked' : '');
+
+  // Checkbox
+  const chk = document.createElement('div');
+  chk.className = 'item-check' + (item.checked ? ' checked' : '');
+  chk.addEventListener('click', () => { item.checked = !item.checked; saveState(); render(); });
+
+  // Name
+  const nameEl = document.createElement('div');
+  nameEl.className = 'item-name' + (item.checked ? ' checked' : '');
+  nameEl.textContent = item.name;
+  if (item.isNew) {
+    const badge = document.createElement('span');
+    badge.className = 'new-badge';
+    badge.textContent = 'NEW';
+    nameEl.appendChild(badge);
+  }
+
+  // Qty controls
+  const qtyCtrl = document.createElement('div');
+  qtyCtrl.className = 'qty-ctrl';
+  const step = item.step || 1;
+
+  const amtInput = document.createElement('input');
+  amtInput.className = 'qty-amount';
+  amtInput.type = 'number';
+  amtInput.min = '0';
+  amtInput.step = step;
+  amtInput.value = item.amount;
+  amtInput.addEventListener('click', function(e) { e.stopPropagation(); });
+  amtInput.addEventListener('focus', function(e) { e.target.select(); });
+  amtInput.addEventListener('change', function(e) {
+    var v = parseFloat(e.target.value);
+    if (!isNaN(v) && v > 0) { item.amount = v; saveState(); }
+    else { e.target.value = item.amount; }
+  });
+
+  const btnMinus = document.createElement('button');
+  btnMinus.className = 'qty-btn';
+  btnMinus.textContent = '−';
+  btnMinus.addEventListener('click', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    var newVal = Math.round((item.amount - step) * 10000) / 10000;
+    item.amount = newVal > 0 ? newVal : step;
+    amtInput.value = item.amount;
+    saveState(); render();
+  });
+
+  const unitEl = document.createElement('span');
+  unitEl.className = 'qty-unit';
+  unitEl.textContent = item.unit;
+
+  const btnPlus = document.createElement('button');
+  btnPlus.className = 'qty-btn';
+  btnPlus.textContent = '+';
+  btnPlus.addEventListener('click', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    item.amount = Math.round((item.amount + step) * 10000) / 10000;
+    amtInput.value = item.amount;
+    saveState(); render();
+  });
+
+  qtyCtrl.appendChild(btnMinus);
+  qtyCtrl.appendChild(amtInput);
+  qtyCtrl.appendChild(unitEl);
+  qtyCtrl.appendChild(btnPlus);
+
+  // Edit / Delete buttons — on EVERY item
+  const actions = document.createElement('div');
+  actions.className = 'item-actions';
+
+  const editBtn = document.createElement('button');
+  editBtn.className = 'act-btn edit';
+  editBtn.title = 'Edit item';
+  editBtn.textContent = '✏️';
+  editBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    editingKey = `${ci}-${ii}`;
+    render();
+    // Focus name field after render
+    setTimeout(() => {
+      const el = document.getElementById(`edit-name-${ci}-${ii}`);
+      if (el) { el.focus(); el.select(); }
+    }, 30);
+  });
+
+  const delBtn = document.createElement('button');
+  delBtn.className = 'act-btn del';
+  delBtn.title = 'Delete item';
+  delBtn.textContent = '🗑';
+  delBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (confirm(`Remove "${item.name}"?`)) {
+      state[ci].items.splice(ii, 1);
+      if (editingKey === `${ci}-${ii}`) editingKey = null;
+      saveState(); render();
+    }
+  });
+
+  actions.appendChild(editBtn);
+  actions.appendChild(delBtn);
+
+  row.appendChild(chk);
+  row.appendChild(nameEl);
+  row.appendChild(qtyCtrl);
+  row.appendChild(actions);
+  return row;
+}
+
+// ── INLINE EDIT ROW ──────────────────────────────────────────────────────────
+function makeEditRow(item, ci, ii) {
+  const row = document.createElement('div');
+  row.className = 'edit-row';
+
+  // Top: name field
+  const top = document.createElement('div');
+  top.className = 'edit-row-top';
+
+  const nameGroup = document.createElement('div');
+  nameGroup.className = 'edit-field-group';
+  nameGroup.style.flex = '1';
+  const nameLbl = document.createElement('div');
+  nameLbl.className = 'edit-label';
+  nameLbl.textContent = 'Item name';
+  const nameIn = document.createElement('input');
+  nameIn.className = 'edit-name-in';
+  nameIn.type = 'text';
+  nameIn.value = item.name;
+  nameIn.id = `edit-name-${ci}-${ii}`;
+  nameGroup.appendChild(nameLbl);
+  nameGroup.appendChild(nameIn);
+  top.appendChild(nameGroup);
+  row.appendChild(top);
+
+  // Bottom: amount, unit, step + save/cancel
+  const bottom = document.createElement('div');
+  bottom.className = 'edit-row-bottom';
+
+  const amtGroup = document.createElement('div');
+  amtGroup.className = 'edit-field-group';
+  const amtLbl = document.createElement('div');
+  amtLbl.className = 'edit-label';
+  amtLbl.textContent = 'Amount';
+  const amtIn = document.createElement('input');
+  amtIn.className = 'edit-amt-in';
+  amtIn.type = 'number';
+  amtIn.min = '0';
+  amtIn.step = item.step || 1;
+  amtIn.value = item.amount;
+  amtGroup.appendChild(amtLbl);
+  amtGroup.appendChild(amtIn);
+
+  const unitGroup = document.createElement('div');
+  unitGroup.className = 'edit-field-group';
+  const unitLbl = document.createElement('div');
+  unitLbl.className = 'edit-label';
+  unitLbl.textContent = 'Unit';
+  const unitIn = document.createElement('input');
+  unitIn.className = 'edit-unit-in';
+  unitIn.type = 'text';
+  unitIn.value = item.unit;
+  unitGroup.appendChild(unitLbl);
+  unitGroup.appendChild(unitIn);
+
+  const stepGroup = document.createElement('div');
+  stepGroup.className = 'edit-field-group';
+  const stepLbl = document.createElement('div');
+  stepLbl.className = 'edit-label';
+  stepLbl.textContent = '+/− Step';
+  const stepIn = document.createElement('input');
+  stepIn.className = 'edit-step-in';
+  stepIn.type = 'number';
+  stepIn.min = '0';
+  stepIn.step = item.step || 1;
+  stepIn.value = item.step || 1;
+  stepGroup.appendChild(stepLbl);
+  stepGroup.appendChild(stepIn);
+
+  const spacer = document.createElement('div');
+  spacer.className = 'edit-spacer';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'edit-cancel-btn';
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.addEventListener('click', () => { editingKey = null; render(); });
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'edit-save-btn';
+  saveBtn.textContent = 'Save';
+  const doSave = () => {
+    const newName = nameIn.value.trim();
+    const newAmt  = parseFloat(amtIn.value);
+    const newUnit = unitIn.value.trim();
+    const newStep = parseFloat(stepIn.value);
+    if (!newName) { nameIn.focus(); return; }
+    item.name   = newName;
+    item.amount = (!isNaN(newAmt) && newAmt > 0) ? newAmt : item.amount;
+    item.unit   = newUnit || item.unit;
+    item.step   = (!isNaN(newStep) && newStep > 0) ? newStep : item.step;
+    editingKey  = null;
+    saveState(); render();
+  };
+  saveBtn.addEventListener('click', doSave);
+
+  // Enter key in any field saves
+  [nameIn, amtIn, unitIn, stepIn].forEach(inp => {
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') doSave(); if (e.key === 'Escape') { editingKey = null; render(); } });
+  });
+
+  bottom.appendChild(amtGroup);
+  bottom.appendChild(unitGroup);
+  bottom.appendChild(stepGroup);
+  bottom.appendChild(spacer);
+  bottom.appendChild(cancelBtn);
+  bottom.appendChild(saveBtn);
+  row.appendChild(bottom);
+  return row;
+}
+
+// ── ADD ITEM ROW ─────────────────────────────────────────────────────────────
+function makeAddRow(ci) {
+  const row = document.createElement('div');
+  row.className = 'add-item-row';
+
+  const nameIn = document.createElement('input');
+  nameIn.className = 'add-item-name';
+  nameIn.type = 'text';
+  nameIn.placeholder = 'New item…';
+  nameIn.id = `add-name-${ci}`;
+
+  const amtIn = document.createElement('input');
+  amtIn.className = 'add-item-amount';
+  amtIn.type = 'number';
+  amtIn.placeholder = 'Qty';
+  amtIn.min = '0';
+  amtIn.id = `add-amt-${ci}`;
+
+  const unitIn = document.createElement('input');
+  unitIn.className = 'add-item-unit';
+  unitIn.type = 'text';
+  unitIn.placeholder = 'unit';
+  unitIn.id = `add-unit-${ci}`;
+
+  const btn = document.createElement('button');
+  btn.className = 'add-item-btn';
+  btn.textContent = '+';
+  btn.addEventListener('click', () => addItem(ci));
+
+  nameIn.addEventListener('keydown', e => { if (e.key === 'Enter') amtIn.focus(); });
+  amtIn.addEventListener('keydown',  e => { if (e.key === 'Enter') unitIn.focus(); });
+  unitIn.addEventListener('keydown', e => { if (e.key === 'Enter') addItem(ci); });
+
+  row.appendChild(nameIn);
+  row.appendChild(amtIn);
+  row.appendChild(unitIn);
+  row.appendChild(btn);
+  return row;
+}
+
+// ── ACTIONS ──────────────────────────────────────────────────────────────────
+function addItem(ci) {
+  const nameEl = document.getElementById(`add-name-${ci}`);
+  const amtEl  = document.getElementById(`add-amt-${ci}`);
+  const unitEl = document.getElementById(`add-unit-${ci}`);
+  const name = nameEl.value.trim();
+  if (!name) { nameEl.focus(); return; }
+  const amount = parseFloat(amtEl.value) || 1;
+  const unit   = unitEl.value.trim() || 'pc';
+  state[ci].items.push({ name, amount, unit, step: amount, checked: false, isCustom: true });
+  saveState(); render();
+  setTimeout(() => { const el = document.getElementById(`add-name-${ci}`); if (el) el.focus(); }, 40);
+}
+
+function selectAll() {
+  state.forEach(cat => cat.items.forEach(i => i.checked = true));
+  saveState(); render();
+}
+function clearAll() {
+  state.forEach(cat => cat.items.forEach(i => i.checked = false));
+  saveState(); render();
+}
+function resetQty() {
+  if (!confirm('Reset all quantities to defaults?')) return;
+  const fresh = freshState();
+  state.forEach((cat, ci) => {
+    cat.items.forEach((item, ii) => {
+      if (!item.isCustom) {
+        const def = fresh[ci]?.items[ii];
+        if (def) { item.amount = def.amount; item.step = def.step; }
+      }
+    });
+  });
+  saveState(); render();
+}
+function updateCount() {
+  const all = state.flatMap(c => c.items);
+  const checked = all.filter(i => i.checked);
+  const el = document.getElementById('sel-count');
+  if (!checked.length) el.textContent = 'No items selected';
+  else el.innerHTML = `<span>${checked.length}</span> of ${all.length} items selected`;
+}
+
+function showShareModal(text, waUrl) {
+  // Remove any existing modal
+  const existing = document.getElementById('wa-modal');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'wa-modal';
+  overlay.style.cssText = `
+    position:fixed;inset:0;z-index:9999;
+    background:rgba(0,0,0,0.55);
+    display:flex;align-items:flex-end;justify-content:center;
+    padding:0;
+  `;
+
+  const sheet = document.createElement('div');
+  sheet.style.cssText = `
+    background:#fff;width:100%;max-width:520px;
+    border-radius:20px 20px 0 0;
+    padding:20px 18px 32px;
+    max-height:80vh;display:flex;flex-direction:column;gap:12px;
+    box-shadow:0 -4px 24px rgba(0,0,0,0.15);
+  `;
+
+  // Handle bar
+  const bar = document.createElement('div');
+  bar.style.cssText = `width:40px;height:4px;background:#ddd;border-radius:4px;margin:0 auto 4px;`;
+
+  // Title
+  const title = document.createElement('div');
+  title.style.cssText = `font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;color:#2d2a26;`;
+  title.textContent = '📲 Send via WhatsApp';
+
+  // Subtitle
+  const sub = document.createElement('div');
+  sub.style.cssText = `font-size:12px;color:#8a8480;margin-top:-6px;`;
+  sub.textContent = 'Copy the message below, then paste it in WhatsApp.';
+
+  // Message box
+  const msgBox = document.createElement('textarea');
+  msgBox.value = text;
+  msgBox.readOnly = true;
+  msgBox.style.cssText = `
+    flex:1;min-height:160px;max-height:280px;
+    border:1.5px solid #e5e0d8;border-radius:10px;
+    padding:10px 12px;font-size:12px;font-family:'Nunito Sans',sans-serif;
+    color:#2d2a26;background:#faf8f5;resize:none;outline:none;
+    line-height:1.5;overflow-y:auto;
+  `;
+
+  // Buttons row
+  const btns = document.createElement('div');
+  btns.style.cssText = `display:flex;gap:8px;`;
+
+  // Copy button
+  const copyBtn = document.createElement('button');
+  copyBtn.textContent = '📋 Copy message';
+  copyBtn.style.cssText = `
+    flex:1;padding:13px;border:none;border-radius:12px;
+    background:#e07b39;color:white;
+    font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;
+  `;
+  copyBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(text).then(() => {
+      copyBtn.textContent = '✅ Copied!';
+      copyBtn.style.background = '#25D366';
+      setTimeout(() => {
+        copyBtn.textContent = '📋 Copy message';
+        copyBtn.style.background = '#e07b39';
+      }, 2500);
+    }).catch(() => {
+      // Fallback: create a temp textarea off-screen, copy from it
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try {
+        document.execCommand('copy');
+        copyBtn.textContent = '✅ Copied!';
+        copyBtn.style.background = '#25D366';
+        setTimeout(() => {
+          copyBtn.textContent = '📋 Copy message';
+          copyBtn.style.background = '#e07b39';
+        }, 2500);
+      } catch(e) {
+        alert('Could not copy automatically. Please long-press the message above and select "Copy All".');
+      }
+      document.body.removeChild(ta);
+    });
+  });
+
+  // Open WhatsApp button
+  const waBtn = document.createElement('button');
+  waBtn.textContent = '💬 Open WhatsApp';
+  waBtn.style.cssText = `
+    flex:1;padding:13px;border:none;border-radius:12px;
+    background:#25D366;color:white;
+    font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;
+  `;
+  waBtn.addEventListener('click', () => {
+    window.location.href = waUrl;
+  });
+
+  // Close button
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = '✕ Close';
+  closeBtn.style.cssText = `
+    width:100%;padding:10px;border:1.5px solid #e5e0d8;border-radius:12px;
+    background:#fff;color:#8a8480;
+    font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;
+  `;
+  closeBtn.addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+
+  btns.appendChild(copyBtn);
+  btns.appendChild(waBtn);
+  sheet.appendChild(bar);
+  sheet.appendChild(title);
+  sheet.appendChild(sub);
+  sheet.appendChild(msgBox);
+  sheet.appendChild(btns);
+  sheet.appendChild(closeBtn);
+  overlay.appendChild(sheet);
+  document.body.appendChild(overlay);
+}
+
+
+// INIT
+try {
+  state = loadState();
+  render();
+} catch(e) {
+  document.getElementById('app').innerHTML =
+    '<div style="padding:20px;color:red;font-family:monospace;font-size:12px;word-break:break-all;">' +
+    '<strong>Error:</strong> ' + e.name + ': ' + e.message + '</div>';
+}
+</script>
+</body>
+</html>
